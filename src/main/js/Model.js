@@ -1,4 +1,5 @@
-import {uniqueId, isFunction, isUndefined} from 'lodash';
+import uniqueId from 'lodash.uniqueid';
+import isFunction from 'lodash.isfunction';
 import EventDispatcher from './EventDispatcher';
 import ChangeEvent from './ChangeEvent';
 
@@ -84,7 +85,7 @@ export default class Model extends EventDispatcher {
         if (initials && key in initials) {
           defaults[key] = initials[key]; // Override defaults.
         }
-        if (attribute.required && isUndefined(defaults[key])) {
+        if (attribute.required && defaults[key] === undefined) {
           throw new Error(`Required attribute ${path} cannot be undefined`);
         }
         descriptors[key] = {enumerable: serializable};
