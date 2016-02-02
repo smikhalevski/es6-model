@@ -6,6 +6,7 @@
     "test": "mocha --reporter progress --compilers js:babel-core/register --recursive \"./src/test/**/*Test.js\"",
     "doc": "jsdoc -r -c .jsdocrc -d target/doc"
   },
+  "main": "target/out/index.js",
   "devDependencies": {
     "webpack": "1.12.9",
     "babel-loader": "6.2.0",
