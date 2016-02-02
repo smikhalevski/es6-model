@@ -1,0 +1,17 @@
+{
+  "plugins": ["plugins/markdown", "node_modules/jsdoc-babel"],
+  "babel": {
+    "stage": 0
+  },
+  "source": {
+    "include": ["spec", "src/main"]
+  },
+  "templates": {
+    "default": {
+      "outputSourceFiles": false
+    }
+  },
+  "tags": {
+    "allowUnknownTags": false
+  }
+}
