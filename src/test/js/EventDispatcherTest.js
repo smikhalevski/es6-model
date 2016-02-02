@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import assert, {equal, deepEqual} from 'assert';
+import {equal, deepEqual} from 'assert';
 import EventDispatcher, {LISTENERS} from '../../main/js/EventDispatcher';
 
 describe('EventDispatcher', () => {

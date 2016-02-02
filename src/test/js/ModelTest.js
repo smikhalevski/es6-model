@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import assert, {equal, deepEqual, throws} from 'assert';
+import {equal, deepEqual, throws} from 'assert';
 import Model from '../../main/js/Model';
 import ChangeEvent from '../../main/js/ChangeEvent';
 

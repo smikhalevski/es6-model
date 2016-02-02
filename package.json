@@ -1,6 +1,20 @@
 {
-  "name": "es6-model",
+  "name": "es6-domain-model",
   "version": "0.0.1",
+  "keywords": [
+    "es6",
+    "domain",
+    "model",
+    "mvc",
+    "accessor",
+    "emitter",
+    "dispatcher",
+    "change",
+    "add",
+    "remove",
+    "sort",
+    "event"
+  ],
   "scripts": {
     "package": "webpack --p",
     "test": "mocha --reporter progress --compilers js:babel-core/register --recursive \"./src/test/**/*Test.js\"",
