@@ -7,7 +7,8 @@ module.exports = {
   output: {
     path: './target/out',
     filename: '[name].js',
-    chunkFilename: './chunks/[name].js'
+    library: 'ES6Model',
+    libraryTarget: 'umd'
   },
   module: {
     loaders: [
