@@ -90,22 +90,22 @@ sportsCar.topSpeed = 320; // → Changed topSpeed to 320
 
 Each attribute can be described by a descriptor object:
 
+#### `Descriptor`
+
 **Methods**
 
 <code>{*} <b>get</b>(currentValue)</code>
 
-Value returned by this method is returned as a requested property value.
-
-Parameters
-- `{*} currentValue`<br/> Current value stored in model.
+> Value returned by this method is returned as a requested property value.
+> 
+> - `{*} currentValue`<br/> Current value stored in model.
 
 <code>{*} <b>set</b>(value, currentValue)</code>
 
-Value returned by setter is stored in model.
-
-Parameters
-- `{*} value`<br/> Value intended to assign.
-- `{*} currentValue`<br/> Current value stored in model.
+> Value returned by setter is stored in model.
+> 
+> - `{*} value`<br/> Value intended to assign.
+> - `{*} currentValue`<br/> Current value stored in model.
 
 **Properties**
 
