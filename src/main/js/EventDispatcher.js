@@ -68,6 +68,9 @@ export default class EventDispatcher {
    * @param {Object} event Event to dispatch.
    */
   dispatchEvent (event) {
+    if (!event.hasOwnProperty('target')) {
+      event.target = this;
+    }
     let listeners = [];
     for (let Class of this[LISTENERS].keys()) {
       if (event instanceof Class) {
