@@ -79,7 +79,7 @@ describe('Model#constructor', () => {
     equal(modelA.foo, 123);
   });
 
-  it('uses undefined, nulls, primitives and wrappers, arrays and functions as default values of an attribute', () => {
+  it('uses `undefined`, `null`, primitives and wrappers, arrays and functions as default values of an attribute', () => {
     let myArray = [],
         myObject = {};
     class ModelA extends Model {

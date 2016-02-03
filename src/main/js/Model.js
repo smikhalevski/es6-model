@@ -79,7 +79,7 @@ export default class Model extends EventDispatcher {
         if ('set' in attribute && !isFunction(set)) {
           throw new Error(`Expected setter of ${path} to be a function`);
         }
-        if ('default' in attribute) {
+        if (attribute.default !== undefined) {
           defaults[key] = attribute.default;
         }
         if (initials && key in initials) {
@@ -88,7 +88,7 @@ export default class Model extends EventDispatcher {
         if (attribute.required && defaults[key] === undefined) {
           throw new Error(`Required attribute ${path} cannot be undefined`);
         }
-        descriptors[key] = {enumerable: serializable};
+        descriptors[key] = {enumerable: serializable, configurable: true};
         descriptors[key].get = function() {
           if (get) {
             try {
