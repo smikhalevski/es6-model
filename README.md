@@ -33,9 +33,9 @@ The main idea is to make process of creating and mutating models and collections
 
 ### **`Model`**
 
-`Model` extends `EventDispatcher` and intends to store properties as a regular object so you don't need to call special accessor method every time you want to change or retrieve an property value.
+`Model` extends `EventDispatcher` and stores properties as a regular object.
 
-Properties of `Model` instance can be *managed* and *unmanaged*. Managed properties are referenced as attributes and can be defined by object stored in static property `attributes` of particular model constructor:
+Properties of `Model` instance can be *managed* and *unmanaged*. Managed properties are referenced as attributes and can be defined by static property `attributes` of particular model constructor:
 
 ```javascript
 class CarModel extends Model {
@@ -45,10 +45,10 @@ class CarModel extends Model {
 }
 ```
 
-The snippet above describes model class that would have single attribute `brand`. When value of that attribute is changed via ssignment an instance of `ChangeEvent` is being dispatched by `CarModel`.
+This snippet describes model class that has single attribute `brand`. When value of that attribute is changed by assignment operator an instance of `ChangeEvent` is being dispatched by `CarModel`.
 
 ```javascript
-var car = new CarModel;
+let car = new CarModel;
 
 function changeListener(event) {
   console.log(`Changed ${event.key} to ${this[event.key]}`);
@@ -61,8 +61,13 @@ car.brand = 'Porshe'; // → Changed brand to Porshe
 In the meantime assigning any other properties to this object would not trigger any events, because those properties are **unmanaged**. To trigger change events for both attributes and properties use `update` method:
 
 ```javascript
-car.update({color: 'aubergine'}); // → Changed color to aubergine
-car.update({brand: 'Lada'}); // → Changed brand to Lada
+car.update({
+  color: 'aubergine',
+  brand: 'Lada'
+});
+// Order of events in this case is not guaranteed.
+// → Changed color to aubergine
+// → Changed brand to Lada
 ```
 
 Attributes are inherited and can be overridden:
@@ -75,38 +80,38 @@ class SportsCarModel extends CarModel {
 }
 
 let sportsCar = new SportsCarModel;
-car.addEventListener(ChangeEvent, changeListener);
+sportsCar.addEventListener(ChangeEvent, changeListener);
 
-console.log(car.topSpeed); // → 200
+console.log(sportsCar.topSpeed); // → 200
 
-car.brand = 'Porshe'; // → Changed brand to Porshe
-car.topSpeed = 320; // → Changed topSpeed to 320
+sportsCar.brand = 'Porshe'; // → Changed brand to Porshe
+sportsCar.topSpeed = 320; // → Changed topSpeed to 320
 ```
 
-Each attribute is described by a descriptor which can have following properties:
+Each attribute can be described by a descriptor object:
 
-**`get`** `function(currentValue)`
+**Methods**
 
-Getter function receives currently current attribute value as a sole parameter. Value returned by getter is returned as attribute value.
+<code>{*} <b>get</b>(currentValue)</code>
 
-**`set`** `function(value, currentValue)`
+Value returned by this method is returned as a requested property value.
 
-Setter function receives value intended to be assigned to attribute and value that is currently stored in model. Value returned by setter is stored in model.
+Parameters
+- `{*} currentValue`<br/> Current value stored in model.
 
-**`default`**
+<code>{*} <b>set</b>(value, currentValue)</code>
 
-Default value, assigned by attribute setter at instantiation time.
+Value returned by setter is stored in model.
 
-**`serializable`**
+Parameters
+- `{*} value`<br/> Value intended to assign.
+- `{*} currentValue`<br/> Current value stored in model.
 
-Should attribute be enumerable.
+**Properties**
 
-**`constant`**
-
-Can attribute be assigned after model instantiation. 
-
-**`required`**
-
-Does attibute accept `null` and `undefined` values.
-
-
+| Name  | Type | Default | Description |
+| --- | --- | --- | --- |
+| `default` | `*` | `undefined` | Default value, assigned via setter at instantiation.  |
+| `serializable` | `Boolean` | `true` | Should attribute be enumerable. |
+| `constant` | `Boolean` | `false` | Can attribute be assigned after instantiation.  |
+| `required` | `Boolean` | `false` | Does attibute permit assignment of `null` and `undefined` values. |
