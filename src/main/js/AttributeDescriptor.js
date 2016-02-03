@@ -89,7 +89,7 @@ Object.assign(AttributeDescriptor.prototype, {
   process,
   propagate,
   construct,
-  require,
+  isRequired,
   defaultValue,
   notSerializable,
   nested
@@ -160,8 +160,8 @@ export function defaultValue (defaultValue = undefined) {
   return then.call(this, {default: defaultValue});
 }
 
-export function require () {
-  return then.call(this, {require: true});
+export function isRequired () {
+  return then.call(this, {required: true});
 }
 
 /**
