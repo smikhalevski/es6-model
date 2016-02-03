@@ -31,11 +31,7 @@ The main idea is to make process of creating and mutating models and collections
 
 ## API
 
-### **`Model`**
-
-`Model` extends `EventDispatcher` and stores properties as a regular object.
-
-Properties of `Model` instance can be *managed* and *unmanaged*. Managed properties are referenced as attributes and can be defined by static property `attributes` of particular model constructor:
+### Models
 
 ```javascript
 class CarModel extends Model {
@@ -88,11 +84,64 @@ sportsCar.brand = 'Porshe'; // → Changed brand to Porshe
 sportsCar.topSpeed = 320; // → Changed topSpeed to 320
 ```
 
+
+
+
+
+##### <code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
+
+Model that uses accessors to mutate its attributes and properties.
+
+Attributes can be redefined.
+
+Undefined, nulls, primitives and their wrappers, arrays and functions are treated as
+default value if provided as attribute descriptor.
+
+Constant attribute requires `default` to be explicitly specified or its value should
+be among initials. Constant attribute cannot be set after model initialization.
+
+Properties of `Model` instance can be *managed* and *unmanaged*. Managed properties are referenced as attributes and can be defined by static property `attributes` of particular model constructor:
+
+<code>Model(initials)</code>
+
+###### Members
+
+<code>&lt;static&gt; {String} <b>attributes</b> = "attributes" </code>
+
+Symbol ar name of model static property that holds attribute descriptors.
+
+Accessed during construction of every instance of model class or its descendants.
+
+###### Methods
+
+<code>{String} <b>getUniqueId</b>()</code>
+
+Get unique model identifier.
+
+<code>{String} <b>getUniqueId</b>()</code>
+
+Get model identifier.
+
+<code>{Model} <b>update</b>(source)</code>
+Performs deep transactional update of this model, recursively calling `update` method on stored objects if available.
+
+Fires change events for regular model properties as well as for model attributes if their values change.
+
+Non-enumerable properties of `source` are ignored during update.
+
+
+
+
+
+
+
+
+
 Each attribute can be described by a descriptor object:
 
 #### `Descriptor`
 
-**Methods**
+###### Methods
 
 <code>{*} <b>get</b>(currentValue)</code>
 
@@ -107,7 +156,7 @@ Each attribute can be described by a descriptor object:
 > - `{*} value`<br/> Value intended to assign.
 > - `{*} currentValue`<br/> Current value stored in model.
 
-**Properties**
+###### Properties
 
 | Name  | Type | Default | Description |
 | --- | --- | --- | --- |
