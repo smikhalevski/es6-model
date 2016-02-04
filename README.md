@@ -312,6 +312,12 @@ try {
 
 ## <code>class List extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
+List is array-like sparse ordered collection of _non unique_ models of particular type. Sparse means that list can have `undefined` values in it.
+
+List mixes all methods from native `Array` including `@@iterator` so both `for of` and `for in` are available for `List` instances as well.
+
+If any model stored in list dispatches an event, this event is dispathed by lit too. Same model can be contained by multiple lists and all those lists would be notified on model events.
+
 #### <a name="list.constructor"></a><code>new List ([<i>array.&lt;object|<a href="model">Model</a>&gt;</i> models])</code>
 
 Creates new list initiating it with provided models. All non-`undefined` items from `models` are converted to `Model` instances.
