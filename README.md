@@ -1,14 +1,75 @@
-### `class Model`
+### <a name="#event-dispatcher"></a>`class EventDispatcher`
+
+
+
+
+
+### <code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
 #### <a name="model.constructor"></a>`new Model`
 
 ```javascript
-new Model(object initilas)
+new Model([object initilas])
 ```
+
+Creates new `Model` instance updating it with values provided by optional `initials` object.
+
+```javascript
+let model = new Model({foo: 123});
+console.log(model.foo) // → 123
+```
+
+#### `Model#getUniqueId()`
+
+```javascript
+string getUniqueId()
+```
+
+Returns unique model identifier. Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-cid).
+
+#### `Model#getId()`
+
+```javascript
+* getId()
+```
+
+Returns model identifier used to distinguish models in [`List`](#list). Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-id). By default, returns `Model#id`, so if one is not defined as attribute or as a property, `undefined` is returned.
+
+```javascript
+let model = new Model();
+model.id = 'abc';
+
+console.log(model.getId()) // → abc
+```
+
+#### `Model#update()`
+
+```javascript
+void update(object source)
+```
+
+Performs deep transactional update of this model, recursively calling `update` method on stored objects if available. Transactional means that change events are dispatched when all fields from `source` are assigned to model, so listeners don't see partially updated model.
+
+Triggers change events for regular model properties as well as for model attributes if their values change basing on `Object.is` comparison.
+
+Non-enumerable properties of `source` are ignored during update.
+
+```javascript
+let model = new Model();
+
+function changeListener(event) {
+  console.log(`Changed ${event.key} to ${this[event.key]}`);
+}
+model.addEventListener(ChangeEvent, changeListener);
+
+model.update({foo: 'bar'}); // → Changed foo to bar
+```
+
+
 
 ### `interface Descriptor`
 
-#### `get()`
+#### `Descriptor#get()`
 
 ```javascript
 * get(* storedValue)
@@ -31,13 +92,13 @@ let user = new UserModel({greeting: 'Peter'});
 console.log(user.greeting); // → Hello Peter!
 ```
 
-#### <a name="#model.set"></a>`set()`
+#### <a name="#model.set"></a>`Descriptor#set()`
 
 ```javascript
 * set(* value, storedValue)
 ```
 
-Optional attribute setter receives value user inteneded to assign and value that is currently being stored in model. If `set` returns value that is not equal to `storedValue` then returned value is first stored in model and then instance of `ChangeEvent` is dispatched by model. By default, `set` returns `value` as is.
+Optional attribute setter receives value user inteneded to assign and value that is currently being stored in model. If `set` returns value that is not equal to `storedValue` then returned value is first stored in model and then instance of `ChangeEvent` is dispatched by model. Values are compared using `Object.is`. By default, `set` returns `value` as is.
 
 ```javascript
 class FooModel extends Model {
@@ -61,7 +122,7 @@ foo.even = 1; // → Even is set to 2
 foo.even = 2; // Attribute did not change its value so no changes are dispatched
 ```
 
-#### `default`
+#### `Descriptor#default`
 
 Attribute default value stored in model during instantiation. [Setter](#model.set) is used to assign value. This value can be overridden by initials provided to [model constructor](#model.constructor). By default is set to `undefined`.
 
@@ -79,7 +140,7 @@ let car = new CarModel({speed: 300});
 console.log(`${car.brand} can drive ${car.speed} km/h`); // → Porshe can drive 300 km/h
 ```
 
-#### `serializable`
+#### `Descriptor#serializable`
 
 Boolean flag that toggles attribute enumerability. By default is set to `true`.
 
@@ -99,7 +160,7 @@ console.log(JSON.stringify(user)); // → {"name":"Johnny"}
 console.log(user.isActive); // → false
 ```
 
-#### `constant`
+#### `Descriptor#constant`
 
 If set to `true` prevents attribute from being changed after intantiation. If attribute value was not provided as `default` or among initials then `Error` is thrown.
 
@@ -116,7 +177,7 @@ user.userId = 128; // → TypeError: Cannot set property which has only a getter
 new UserModel; // → Error: Uninitialized constant attribute UserModel[userId]
 ```
 
-#### `required`
+#### `Descriptor#required`
 
 Boolean flag that toggles weather attribute accepts `null` and `undefined` values or not. By default is set to `false`.
 
@@ -133,3 +194,4 @@ try {
 } catch(e) {
   console.log(foo.baz); // → Okaay
 }
+```
