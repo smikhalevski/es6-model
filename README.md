@@ -1,10 +1,155 @@
-### <a name="#event-dispatcher"></a>`class EventDispatcher`
+### <a name="event-dispatcher"></a>`class EventDispatcher`
 
+#### `EventDispatcher#addEventListener()`
 
+```javascript
+void addEventListener(
+  class eventClass ...,
+  function listener
+)
+```
+
+Registers an event listener of a specific event class. Listener receives a notification when an instance of event of the specified class is being dispatched. `instanceof` is used to detect which events should be called.
+
+At invocation time `this` in `listener` is set to dispatching `EventDispatcher` instance.
+
+```javascript
+class FooEvent {
+  construtor(message) {
+    this.message = message;
+  }
+}
+
+class BazEvent extends FooEvent {}
+
+let dispatcher = new EventDispatcher;
+
+dispatcher.addEventListener(FooEvent, event => console.log('Foo said ' + event.message));
+dispatcher.addEventListener(BazEvent, event => console.log('Baz said ' + event.message));
+
+dispatcher.dispatchEvent(new FooEvent('hello!')); // → Foo said hello!
+
+dispatcher.dispatchEvent(new BazEvent('woops!'));
+// → Foo said woops!
+// → Baz said woops!
+```
+
+#### `EventDispatcher#removeEventListener()`
+
+```javascript
+void removeEventListener(
+  [class eventClass ...],
+  function listener
+)
+```
+
+Removes an event listener from dispatcher. If no event classes are provided, listener is removed for all event classes registered for object at runtime.
+
+#### `EventDispatcher#dispatchEvent()`
+
+```javascript
+void dispatchEvent(object event)
+```
+
+Dispatches an event notifying listeners appropriate for provided event. If event has no property `target` defined then dispather assigns itself to `target`.
+
+```javascript
+let dispatcher = new EventDispatcher;
+dispather.phrase = 'Le bro dispatcher!';
+
+dispatcher.addEventListener(Object, event => console.log(event.target.phrase));
+
+dispatcher.dispatchEvent({}); // → Le bro dispatcher!
+```
+
+#### `EventDispatcher#transaction()`
+
+```javascript
+void transaction(function callback)
+```
+
+Invokes `callback` in transaction causing events dispatched by this dispatcher to wait until callback _successfully_ finishes.
+
+```javascript
+let dispatcher = new EventDispatcher;
+
+dispatcher.addEventListener(Object, event => console.log(event.message));
+
+dispatcher.transaction(() => {
+  dispatcher.dispatchEvent({message: 'Transactions'});
+  dispatcher.dispatchEvent({message: 'are cool!'});
+});
+// → Transactions
+// → are cool!
+```
 
 
 
 ### <code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
+
+#### `Model.attributesKey`
+
+Symbol or string representing key of static field where `Model` constructor should search for [attribute descriptors](#descriptor). Be default is set to `"attributes"`. If you want to change this key, do this before any model is instantiated.
+
+```javascript
+class SandwichModel extends Model {
+  static blahblah = {
+    needsBread: {default: true}
+  };
+}
+
+Model.attributesKey = 'blahblah'; // Change before instantiation
+
+let sandwich = new SandwichModel;
+console.log(sandwich.needsBread) // → true
+```
+
+#### <code>Model#[<a href="model.attributeskey">@@attributesKey</a>]</code>
+
+```javascript
+object @@attributesKey
+```
+
+Optional definition of descriptor for a particular model.
+
+```javascript
+class CarModel extends Model {
+  static attributes = {
+    brand: {}
+  };
+}
+```
+
+This snippet describes `CarModel` class that has single attribute `brand`. When value of that attribute is changed by assignment operator an instance of `ChangeEvent` is being dispatched by `CarModel`. Read more about [attribute descriptors](#descriptor).
+
+```javascript
+let car = new CarModel;
+
+function changeListener(event) {
+  console.log(`Changed ${event.key} to ${this[event.key]}`);
+}
+car.addEventListener(ChangeEvent, changeListener);
+
+car.brand = 'Porshe'; // → Changed brand to Porshe
+```
+
+Attributes are inherited and can be overridden:
+
+```javascript
+class SportsCarModel extends CarModel {
+  static attributes = {
+    topSpeed: {default: 200}
+  };
+}
+
+let sportsCar = new SportsCarModel;
+sportsCar.addEventListener(ChangeEvent, changeListener);
+
+console.log(sportsCar.topSpeed); // → 200
+
+sportsCar.brand = 'Porshe'; // → Changed brand to Porshe
+sportsCar.topSpeed = 320; // → Changed topSpeed to 320
+```
 
 #### <a name="model.constructor"></a>`new Model`
 
@@ -67,7 +212,7 @@ model.update({foo: 'bar'}); // → Changed foo to bar
 
 
 
-### `interface Descriptor`
+### <a name="descriptor"></a>`interface Descriptor`
 
 #### `Descriptor#get()`
 
@@ -85,7 +230,7 @@ class UserModel extends Model {
         return `Hello ${storedValue}!`;
       }
     }
-  }
+  };
 }
 
 let user = new UserModel({greeting: 'Peter'});
@@ -108,7 +253,7 @@ class FooModel extends Model {
         return value + value % 2;
       }
     }
-  }
+  };
 }
 
 let foo = new FooModel;
@@ -133,7 +278,7 @@ class CarModel extends Model {
   static attributes = {
     brand: 'Porshe', // Shorthand sintax, same as {default: 'Porshe'}
     speed: {default: 250}
-  }
+  };
 }
 
 let car = new CarModel({speed: 300});
@@ -151,7 +296,7 @@ class UserModel extends Model {
       default: false,
       serializable: false
     }
-  }
+  };
 }
 
 let user = new UserModel({name: 'Johnny'});
@@ -168,7 +313,7 @@ If set to `true` prevents attribute from being changed after intantiation. If at
 class UserModel extends Model {
   static attributes = {
     userId: {constant: true}
-  }
+  };
 }
 
 let user = new UserModel({userId: 512});
@@ -185,7 +330,7 @@ Boolean flag that toggles weather attribute accepts `null` and `undefined` value
 class FooModel extends Model {
   static attributes = {
     baz: {required: true}
-  }
+  };
 }
 
 let foo = new FooModel({baz: 'Okaay'});
