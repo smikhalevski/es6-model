@@ -1,166 +1,135 @@
-# ES6 Model
+### `class Model`
 
-An accessor-based approach to defining domain models for ES6 world.
+#### <a name="model.constructor"></a>`new Model`
 
-The main idea is to make process of creating and mutating models and collections as transparent as possible.
+```javascript
+new Model(object initilas)
+```
 
-## Contents
+### `interface Descriptor`
 
-1. Example
-2. API
-  1. [`EventDispatcher`](#event-dispatcher)
-    1. Event System
-    2. Built-in Events
-  2. [`Model`](#model)
-    1. Attributes
-    2. Fluent Descriptor API
-      1. `then`
-      2. `assert`
-      3. `process`
-      4. `construct`
-      5. `propagate`
-      6. `nested`
-      6. `defaultValue`
-      7. `isRequired`
-      8. `isHidden`
-      9. `isConstant`
-  3. `List`
-    1. Typed Lists
-  4. Transactions
-3. Preformance
+#### `get()`
 
-## API
+```javascript
+* get(* storedValue)
+```
 
-### Models
+Optional attribute getter receives value that is currently being stored in model. Getter returns value that should be served to requester. By default, `get` returns `storedValue` as is.
+
+```javascript
+class UserModel extends Model {
+  static attributes = {
+    greeting: {
+      get (storedValue) {
+        return `Hello ${storedValue}!`;
+      }
+    }
+  }
+}
+
+let user = new UserModel({greeting: 'Peter'});
+console.log(user.greeting); // → Hello Peter!
+```
+
+#### <a name="#model.set"></a>`set()`
+
+```javascript
+* set(* value, storedValue)
+```
+
+Optional attribute setter receives value user inteneded to assign and value that is currently being stored in model. If `set` returns value that is not equal to `storedValue` then returned value is first stored in model and then instance of `ChangeEvent` is dispatched by model. By default, `set` returns `value` as is.
+
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    even: {
+      set (value, storedValue) {
+        return value + value % 2;
+      }
+    }
+  }
+}
+
+let foo = new FooModel;
+
+function changeListener(event) {
+  console.log(`Even is set to ${foo.even}`);
+}
+foo.addEventListener(ChangeEvent, changeListener);
+foo.even = 1; // → Even is set to 2
+
+foo.even = 2; // Attribute did not change its value so no changes are dispatched
+```
+
+#### `default`
+
+Attribute default value stored in model during instantiation. [Setter](#model.set) is used to assign value. This value can be overridden by initials provided to [model constructor](#model.constructor). By default is set to `undefined`.
+
+If attribute descriptor has only `default` and default value is `undefined`, `null`, primitive or its wrapper, function or an array you can use shorthand sintax:
 
 ```javascript
 class CarModel extends Model {
   static attributes = {
-    brand: {}
-  };
+    brand: 'Porshe', // Shorthand sintax, same as {default: 'Porshe'}
+    speed: {default: 250}
+  }
 }
+
+let car = new CarModel({speed: 300});
+console.log(`${car.brand} can drive ${car.speed} km/h`); // → Porshe can drive 300 km/h
 ```
 
-This snippet describes model class that has single attribute `brand`. When value of that attribute is changed by assignment operator an instance of `ChangeEvent` is being dispatched by `CarModel`.
+#### `serializable`
+
+Boolean flag that toggles attribute enumerability. By default is set to `true`.
 
 ```javascript
-let car = new CarModel;
-
-function changeListener(event) {
-  console.log(`Changed ${event.key} to ${this[event.key]}`);
-}
-car.addEventListener(ChangeEvent, changeListener);
-
-car.brand = 'Porshe'; // → Changed brand to Porshe
-```
-
-In the meantime assigning any other properties to this object would not trigger any events, because those properties are **unmanaged**. To trigger change events for both attributes and properties use `update` method:
-
-```javascript
-car.update({
-  color: 'aubergine',
-  brand: 'Lada'
-});
-// Order of events in this case is not guaranteed.
-// → Changed color to aubergine
-// → Changed brand to Lada
-```
-
-Attributes are inherited and can be overridden:
-
-```javascript
-class SportsCarModel extends CarModel {
+class UserModel extends Model {
   static attributes = {
-    topSpeed: {default: 200}
-  };
+    isActive: {
+      default: false,
+      serializable: false
+    }
+  }
 }
 
-let sportsCar = new SportsCarModel;
-sportsCar.addEventListener(ChangeEvent, changeListener);
+let user = new UserModel({name: 'Johnny'});
 
-console.log(sportsCar.topSpeed); // → 200
-
-sportsCar.brand = 'Porshe'; // → Changed brand to Porshe
-sportsCar.topSpeed = 320; // → Changed topSpeed to 320
+console.log(JSON.stringify(user)); // → {"name":"Johnny"}
+console.log(user.isActive); // → false
 ```
 
+#### `constant`
 
+If set to `true` prevents attribute from being changed after intantiation. If attribute value was not provided as `default` or among initials then `Error` is thrown.
 
+```javascript
+class UserModel extends Model {
+  static attributes = {
+    userId: {constant: true}
+  }
+}
 
+let user = new UserModel({userId: 512});
+user.userId = 128; // → TypeError: Cannot set property which has only a getter
 
-##### <code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
+new UserModel; // → Error: Uninitialized constant attribute UserModel[userId]
+```
 
-Model that uses accessors to mutate its attributes and properties.
+#### `required`
 
-Attributes can be redefined.
+Boolean flag that toggles weather attribute accepts `null` and `undefined` values or not. By default is set to `false`.
 
-Undefined, nulls, primitives and their wrappers, arrays and functions are treated as
-default value if provided as attribute descriptor.
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    baz: {required: true}
+  }
+}
 
-Constant attribute requires `default` to be explicitly specified or its value should
-be among initials. Constant attribute cannot be set after model initialization.
-
-Properties of `Model` instance can be *managed* and *unmanaged*. Managed properties are referenced as attributes and can be defined by static property `attributes` of particular model constructor:
-
-<code>Model(initials)</code>
-
-###### Members
-
-<code>&lt;static&gt; {String} <b>attributes</b> = "attributes" </code>
-
-Symbol ar name of model static property that holds attribute descriptors.
-
-Accessed during construction of every instance of model class or its descendants.
-
-###### Methods
-
-<code>{String} <b>getUniqueId</b>()</code>
-
-Get unique model identifier.
-
-<code>{String} <b>getUniqueId</b>()</code>
-
-Get model identifier.
-
-<code>{Model} <b>update</b>(source)</code>
-Performs deep transactional update of this model, recursively calling `update` method on stored objects if available.
-
-Fires change events for regular model properties as well as for model attributes if their values change.
-
-Non-enumerable properties of `source` are ignored during update.
-
-
-
-
-
-
-
-
-
-Each attribute can be described by a descriptor object:
-
-#### `Descriptor`
-
-###### Methods
-
-<code>{*} <b>get</b>(currentValue)</code>
-
-> Value returned by this method is returned as a requested property value.
-> 
-> - `{*} currentValue`<br/> Current value stored in model.
-
-<code>{*} <b>set</b>(value, currentValue)</code>
-
-> Value returned by setter is stored in model.
-> 
-> - `{*} value`<br/> Value intended to assign.
-> - `{*} currentValue`<br/> Current value stored in model.
-
-###### Properties
-
-| Name  | Type | Default | Description |
-| --- | --- | --- | --- |
-| `default` | `*` | `undefined` | Default value, assigned via setter at instantiation.  |
-| `serializable` | `Boolean` | `true` | Should attribute be enumerable. |
-| `constant` | `Boolean` | `false` | Can attribute be assigned after instantiation.  |
-| `required` | `Boolean` | `false` | Does attibute permit assignment of `null` and `undefined` values. |
+let foo = new FooModel({baz: 'Okaay'});
+try {
+  foo.baz = undefined; // → Error: Required attribute FooModel[baz] cannot be undefined
+} catch(e) {
+  console.log(foo.baz); // → Okaay
+}
