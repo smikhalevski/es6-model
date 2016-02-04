@@ -144,7 +144,7 @@ console.log(model.foo) // → 123
 Returns unique model identifier. Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-cid).
 
 
-#### <code><i>*</i> getId ()</code>
+#### <code><i>\*</i> getId ()</code>
 
 Returns model identifier used to distinguish models in [`List`](#list). Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-id). By default, returns `Model#id`, so if one is not defined as attribute or as a property, `undefined` is returned.
 
@@ -179,7 +179,7 @@ model.update({foo: 'bar'}); // → Changed foo to bar
 
 ## <a name="descriptor"></a>`interface Descriptor`
 
-#### <code><i>*</i> get (<i>*</i> storedValue)</code>
+#### <code><i>\*</i> get (<i>\*</i> storedValue)</code>
 
 Optional attribute getter receives value that is currently being stored in model. Getter returns value that should be served to requester. By default, `get` returns `storedValue` as is.
 
@@ -199,7 +199,7 @@ console.log(user.greeting); // → Hello Peter!
 ```
 
 
-#### <code><i>*</i> set (<i>*</i> value, <i>*</i> storedValue)</code>
+#### <code><i>\*</i> set (<i>\*</i> value, <i>\*</i> storedValue)</code>
 
 Optional attribute setter receives value user inteneded to assign and value that is currently being stored in model. If `set` returns value that is not equal to `storedValue` then returned value is first stored in model and then instance of `ChangeEvent` is dispatched by model. Values are compared using `Object.is`. By default, `set` returns `value` as is.
 
@@ -226,7 +226,7 @@ foo.even = 2; // Attribute did not change its value so no changes are dispatched
 ```
 
 
-#### <code><i>*</i> default = undefined</code>
+#### <code><i>\*</i> default = undefined</code>
 
 Attribute default value stored in model during instantiation. [Setter](#model.set) is used to assign value. This value can be overridden by initials provided to [model constructor](#model.constructor).
 
