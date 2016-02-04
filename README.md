@@ -1,7 +1,37 @@
-## <a name="event-dispatcher"></a>`class EventDispatcher`
+## Contents
 
+1. [API](#api)
+  1. <a href="#event-dispatcher"><code>class <b>EventDispatcher</b></code></a>
+    1. [`addEventListener`](#add-event-listener)
+    2. [`removeEventListener`](#remove-event-listener)
+    3. [`dispatchEvent`](#dispatch-event)
+    4. [`transaction`](#transaction)
+  2. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
+    1. [`Model.attributesKey`](#model.attributes-key)
+    2. [`attributes`](#attributes)
+    3. [`new Model`](#model.constructor)
+    4. [`getUniqueId`](#model_get-unique-id)
+    4. [`getId`](#get-id)
+    5. [`update`](#model_update)
+  3. <a href="#descriptor"><code>interface <b>Descriptor</b></code></a>
+    1. [`get`](#descriptor_get)
+    2. [`set`](#descriptor_set)
+    3. [`default`](#default)
+    4. [`serializable`](#serializable)
+    5. [`constant`](#constant)
+    6. [`required`](#required)
+  4. <a href="#list"><code>class <b>List</b></code></a>
+    1. [`List.of`](#list.of)
+    2. [`new List`](#list.constructor)
+    3. [`[]`](#list_brackets)
+    4. [`length`](#length)
+    5. [`valueOf`](#list_value-of)
 
-#### <code><i>void</i> addEventListener (<i>class</i> eventClass ..., <i>function</i> listener)</code>
+## API
+
+### <a name="event-dispatcher"></a>`class EventDispatcher`
+
+#### <a name="add-event-listener"></a><code><i>void</i> addEventListener (<i>class</i> eventClass ..., <i>function</i> listener)</code>
 
 Registers an event listener of a specific event class. Listener receives a notification when an instance of event of the specified class is being dispatched. `instanceof` is used to detect which events should be called.
 
@@ -28,13 +58,11 @@ dispatcher.dispatchEvent(new BazEvent('woops!'));
 // → Baz said woops!
 ```
 
-
-#### <code><i>void</i> removeEventListener ([<i>class</i> eventClass ...], <i>function</i> listener)</code>
+#### <a name="remove-event-listener"></a><code><i>void</i> removeEventListener ([<i>class</i> eventClass ...], <i>function</i> listener)</code>
 
 Removes an event listener from dispatcher. If no event classes are provided, listener is removed for all event classes registered for object at runtime.
 
-
-#### <code><i>void</i> dispatchEvent (<i>object</i> event)</code>
+#### <a name="dispatch-event"></a><code><i>void</i> dispatchEvent (<i>object</i> event)</code>
 
 Dispatches an event notifying listeners appropriate for provided event. If event has no property `target` defined then dispather assigns itself to `target`.
 
@@ -47,8 +75,7 @@ dispatcher.addEventListener(Object, event => console.log(event.target.phrase));
 dispatcher.dispatchEvent({}); // → Le bro dispatcher!
 ```
 
-
-#### <code><i>void</i> transaction (<i>function</i> callback)</code>
+#### <a name="transaction"></a><code><i>void</i> transaction (<i>function</i> callback)</code>
 
 Invokes `callback` in transaction causing events dispatched by this dispatcher to wait until callback _successfully_ finishes.
 
@@ -65,11 +92,9 @@ dispatcher.transaction(() => {
 // → are cool!
 ```
 
+### <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
-
-## <a href="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
-
-#### <code><i>string</i> Model.attributesKey</code>
+#### <a name="model.attributes-key"></a><code><i>string</i> Model.attributesKey</code>
 
 Symbol or string representing key of static field where `Model` constructor should search for [attribute descriptors](#descriptor). Be default is set to `"attributes"`. If you want to change this key, do this before any model is instantiated.
 
@@ -86,7 +111,7 @@ let sandwich = new SandwichModel;
 console.log(sandwich.needsBread) // → true
 ```
 
-#### <code><i>object.&lt;string, <a href="#descriptor">Descriptor</a>&gt;</i> [<a href="model.attributeskey">@@attributesKey</a>]</code>
+#### <a name="attributes"></a><code><i>object.&lt;string, <a href="#descriptor">Descriptor</a>&gt;</i> [<a href="model.attributeskey">@@attributesKey</a>]</code>
 
 Optional definition of descriptors for a particular model. Read more [about attribute descriptors below](#descriptor).
 
@@ -138,13 +163,11 @@ let model = new Model({foo: 123});
 console.log(model.foo) // → 123
 ```
 
-
-#### <code><i>String</i> getUniqueId ()</code>
+#### <a name="model_get-unique-id"></a><code><i>String</i> getUniqueId ()</code>
 
 Returns unique model identifier. Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-cid).
 
-
-#### <code><i>\*</i> getId ()</code>
+#### <a name="get-id"></a><code><i>\*</i> getId ()</code>
 
 Returns model identifier used to distinguish models in [`List`](#list). Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-id). By default, returns `Model#id`, so if one is not defined as attribute or as a property, `undefined` is returned.
 
@@ -155,8 +178,7 @@ model.id = 'abc';
 console.log(model.getId()) // → abc
 ```
 
-
-#### <code><i>void</i> update (<i>object</i> source)</code>
+#### <a name="model_update"></a><code><i>void</i> update (<i>object</i> source)</code>
 
 Performs deep transactional update of this model, recursively calling `update` method on stored objects if available. Transactional means that change events are dispatched when all fields from `source` are assigned to model, so listeners don't see partially updated model.
 
@@ -175,11 +197,9 @@ model.addEventListener(ChangeEvent, changeListener);
 model.update({foo: 'bar'}); // → Changed foo to bar
 ```
 
+### <a name="descriptor"></a>`interface Descriptor`
 
-
-## <a name="descriptor"></a>`interface Descriptor`
-
-#### <code><i>\*</i> get (<i>\*</i> storedValue)</code>
+#### <a name="descriptor_get"></a><code><i>\*</i> get (<i>\*</i> storedValue)</code>
 
 Optional attribute getter receives value that is currently being stored in model. Getter returns value that should be served to requester. By default, `get` returns `storedValue` as is.
 
@@ -198,8 +218,7 @@ let user = new UserModel({greeting: 'Peter'});
 console.log(user.greeting); // → Hello Peter!
 ```
 
-
-#### <code><i>\*</i> set (<i>\*</i> value, <i>\*</i> storedValue)</code>
+#### <a name="descriptor_set"></a><code><i>\*</i> set (<i>\*</i> value, <i>\*</i> storedValue)</code>
 
 Optional attribute setter receives value user inteneded to assign and value that is currently being stored in model. If `set` returns value that is not equal to `storedValue` then returned value is first stored in model and then instance of `ChangeEvent` is dispatched by model. Values are compared using `Object.is`. By default, `set` returns `value` as is.
 
@@ -225,8 +244,7 @@ foo.even = 1; // → Even is set to 2
 foo.even = 2; // Attribute did not change its value so no changes are dispatched
 ```
 
-
-#### <code><i>\*</i> default = undefined</code>
+#### <a name="default"></a><code><i>\*</i> default = undefined</code>
 
 Attribute default value stored in model during instantiation. [Setter](#model.set) is used to assign value. This value can be overridden by initials provided to [model constructor](#model.constructor).
 
@@ -249,8 +267,7 @@ car.speed = undefined;
 console.log(car.speed); // → 250
 ```
 
-
-#### <code><i>boolean</i> serializable = true</code>
+#### <a name="serializable"></a><code><i>boolean</i> serializable = true</code>
 
 Boolean flag that toggles attribute enumerability.
 
@@ -270,8 +287,7 @@ console.log(JSON.stringify(user)); // → {"name":"Johnny"}
 console.log(user.isActive); // → false
 ```
 
-
-#### <code><i>boolean</i> constant = false</code>
+#### <a name="constant"></a><code><i>boolean</i> constant = false</code>
 
 If set to `true` prevents attribute from being changed after intantiation. If attribute value was not provided as `default` or among initials then `Error` is thrown.
 
@@ -288,8 +304,7 @@ user.userId = 128; // → TypeError: Cannot set property which has only a getter
 new UserModel; // → Error: Uninitialized constant attribute UserModel[userId]
 ```
 
-
-#### <code><i>boolean</i> required = false</code>
+#### <a name="required"></a><code><i>boolean</i> required = false</code>
 
 Boolean flag that toggles weather attribute accepts `null` and `undefined` values or not. By default is set to `false`.
 
@@ -308,22 +323,97 @@ try {
 }
 ```
 
+### <a name="list"></a><code>class List extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
+`List` is array-like sparse ordered collection of _non unique_ models of particular type. Sparse means that list can have `undefined` values in it.
 
-## <code>class List extends <a href="#event-dispatcher">EventDispatcher</a></code>
+`List` mixes all methods from native `Array` including `@@iterator` so both `for of` and `for in` are available for `List` instances as well.
 
-List is array-like sparse ordered collection of _non unique_ models of particular type. Sparse means that list can have `undefined` values in it.
+If any model stored in list dispatches an event, this event is dispathed by list too. Same model can be contained by multiple lists and all those lists would be notified on model events.
 
-List mixes all methods from native `Array` including `@@iterator` so both `for of` and `for in` are available for `List` instances as well.
+#### <a name="list.of"></a><code><i>List</i> of (<i>class extends <a href="model">Model</a></i> modelClass)</code>
 
-If any model stored in list dispatches an event, this event is dispathed by lit too. Same model can be contained by multiple lists and all those lists would be notified on model events.
+Creates new typed list class.
+
+For multiple invocations with the same `modelClass` the same instance of typed list constructor is returned.
+
+```javascript
+class FooModel extends Model {
+  sayHo () {
+    return this.ho;
+  }
+}
+
+let FooList = List.of(FooModel);
+
+let foos = new FooList([{ho: 'Yay!'}]);
+foos[0].sayHo(); // → Yay!
+```
+
+You can create custom list classes with ease:
+
+```javascript
+class BetterFooList extends List.of(FooModel) {
+  areYouReadyKids () {
+    return this[0].sayHo();
+  }
+}
+
+let betterFoos = new BetterFooList([{ho: 'Aye aye captain!'}]);
+console.log(betterFoos.areYouReadyKids()); // → Aye aye captain!
+```
 
 #### <a name="list.constructor"></a><code>new List ([<i>array.&lt;object|<a href="model">Model</a>&gt;</i> models])</code>
 
 Creates new list initiating it with provided models. All non-`undefined` items from `models` are converted to `Model` instances.
 
+```javascript
+let list = new List([{id: 1}, {id: 2}]);
 
+console.log(list[1]); // → Model {id: 2}
+```
 
+#### <a name="list_brackets"></a><code><i>undefined|<a href="model">Model</a></i> [<i>integer</i> index]</code>
 
+Sets of retrieves list element by index.
 
+If value provided for assignment is not strictly equal to `undefined` then it is converted to `Model`. If provided value is already a `Model` instance then it is stored as is. In case incompatible model is provided, then new model instance of compatible type is created and populated with attributes and properties of provided model.
+
+If assigned model is not equal to model that is currently stored by index then stored model is detached: it stops propagation of its events to list.
+
+```javascript
+let list = new List;
+list[1] = {foo: 'bar'};
+
+console.log(list[0]); // → undefined
+console.log(list[1]); // → Model {foo: "bar"}
+
+list.addEventListener(Object, event => console.log('List is notified by',${event.target}));
+
+let model = list[1];
+model.dispatchEvent({}); // → List is notified by Model {foo: "bar"}
+
+list[1] = undefined;
+model.dispatchEvent({}); // No event propagation occurs.
+```
+
+#### <a name="length"></a><code><i>integer</i> length</code>
+
+Length of list that behaves the same way as native `Array#length`. 
+
+```javascript
+let list = new List;
+list[9] = {};
+
+console.log(list.length); // → 10
+
+list.length = 2;
+console.log(list.length); // → 2
+console.log(list[9]); // → undefined
+// Model that was stored at index 9 is now detached.
+```
+
+#### <a name="list_value-of"></a><code><i>array</i> valueOf</code>
+
+Returns this list as sparse array of models. Modifications of this array do not affect list.
 
