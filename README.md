@@ -331,7 +331,7 @@ try {
 
 If any model stored in list dispatches an event, this event is dispathed by list too. Same model can be contained by multiple lists and all those lists would be notified on model events.
 
-#### <a name="list.of"></a><code><i>List</i> of (<i>class extends <a href="model">Model</a></i> modelClass)</code>
+#### <a name="list.of"></a><code><i>List</i> List.of (<i>class.&lt;<a href="model">Model</a>&gt;</i> modelClass)</code>
 
 Creates new typed list class.
 
@@ -375,7 +375,7 @@ console.log(list[1]); // → Model {id: 2}
 
 #### <a name="list_brackets"></a><code><i>undefined|<a href="model">Model</a></i> [<i>integer</i> index]</code>
 
-Sets of retrieves list element by index.
+Sets or retrieves list element by index.
 
 If value provided for assignment is not strictly equal to `undefined` then it is converted to `Model`. If provided value is already a `Model` instance then it is stored as is. In case incompatible model is provided, then new model instance of compatible type is created and populated with attributes and properties of provided model.
 
@@ -413,7 +413,66 @@ console.log(list[9]); // → undefined
 // Model that was stored at index 9 is now detached.
 ```
 
-#### <a name="list_value-of"></a><code><i>array</i> valueOf</code>
+#### <a name="list_value-of"></a><code><i>array.&lt;undefined|<a href="model">Model</a>&gt;</i> valueOf ()</code>
 
 Returns this list as sparse array of models. Modifications of this array do not affect list.
 
+### <a name="attribute-descriptor"></a><code>class AttributeDescriptor implements <a href="#descriptor">Descriptor</a></code>
+
+#### <a name="attribute-descriptor.then"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> then (<i>Descriptor</i> descriptor)</code>
+
+Adds another descriptor to chain.
+
+#### <a name="attribute-descriptor.assert"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> assert (<i>function</i> predicate, [<i>string</i> message])</code>
+
+Adds set value assertion to the queue of descriptors. If value being assigned to attribute is does not match `predicate` then `Error` is thrown.
+
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    baz: assert(Number.isInetger, 'Integer expected')
+  };
+}
+
+let foo = new FooModel;
+foo.baz = 2;
+foo.baz = 1.5; // → Error: Integer expected
+```
+
+#### <a name="attribute-descriptor.process"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> process (<i>function</i> processor)</code>
+
+Adds set value processing to the queue of descriptors. Value being set is served to `processor` and returned value is passed through the queue.
+
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    baz: process(value => value * 2);
+  };
+}
+
+let foo = new FooModel;
+foo.baz = 2;
+console.log(foo.baz); // → 4
+```
+
+#### <a name="attribute-descriptor.construct"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> construct (<i>function</i> constructor)</code>
+
+Adds class construction and `instanceof` check to the queue of descriptors. If instance of `constructor` is assigned to attribute it is passed through the queue, otherwise `new constructor(value)` is invoked.
+
+```javascript
+class Baz {
+  constructor (input) {
+    this.input = input;
+  }
+}
+
+class FooModel extends Model {
+  static attributes = {
+    baz: construct(Baz);
+  };
+}
+
+let foo = new FooModel;
+foo.baz = 'abc';
+console.log(foo.baz.input); // → abc
+```
