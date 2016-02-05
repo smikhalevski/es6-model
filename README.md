@@ -26,6 +26,16 @@
     3. [`[]`](#list_brackets)
     4. [`length`](#length)
     5. [`valueOf`](#list_value-of)
+  5. <a href="#chained-dispatcher"><code>class <b>ChainedDispatcher</b> implements Dispatcher</code></a>
+    1. [`then`](#then)
+    2. [`assert`](#assert)
+    3. [`process`](#process)
+    4. [`construct`](#construct)
+    5. [`isRequired`](#is-required)
+    6. [`defaultValue`](#default-value)
+    7. [`notSerializable`](#not-serializable)
+    8. [`propagate`](#propagate)
+    9. [`nested`](#nested)
 
 ## API
 
@@ -111,7 +121,7 @@ let sandwich = new SandwichModel;
 console.log(sandwich.needsBread) // → true
 ```
 
-#### <a name="attributes"></a><code><i>object.&lt;string, <a href="#descriptor">Descriptor</a>&gt;</i> [<a href="model.attributeskey">@@attributesKey</a>]</code>
+#### <a name="attributes"></a><code><i>object.&lt;string, <a href="#descriptor">Descriptor</a>&gt;</i> [<a href="model.attributeskey">Model.attributesKey</a>]</code>
 
 Optional definition of descriptors for a particular model. Read more [about attribute descriptors below](#descriptor).
 
@@ -169,10 +179,10 @@ Returns unique model identifier. Serves same purpose as [Backbone.Model.cid](htt
 
 #### <a name="get-id"></a><code><i>\*</i> getId ()</code>
 
-Returns model identifier used to distinguish models in [`List`](#list). Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-id). By default, returns `Model#id`, so if one is not defined as attribute or as a property, `undefined` is returned.
+Returns model identifier used to distinguish models in [`List`](#list). Serves same purpose as [Backbone.Model.cid](http://backbonejs.org/#Model-id). By default, returns `this.id`, so if one is not defined as an attribute or as a property, `undefined` is returned.
 
 ```javascript
-let model = new Model();
+let model = new Model;
 model.id = 'abc';
 
 console.log(model.getId()) // → abc
@@ -180,14 +190,14 @@ console.log(model.getId()) // → abc
 
 #### <a name="model_update"></a><code><i>void</i> update (<i>object</i> source)</code>
 
-Performs deep transactional update of this model, recursively calling `update` method on stored objects if available. Transactional means that change events are dispatched when all fields from `source` are assigned to model, so listeners don't see partially updated model.
+Performs deep transactional update of this model, recursively calling `update` method on stored objects if available. Transactional means that change events are dispatched when all fields from `source` are assigned to model, so listeners are never notified when model is in partially updated state.
 
 Triggers change events for regular model properties as well as for model attributes if their values change basing on `Object.is` comparison.
 
 Non-enumerable properties of `source` are ignored during update.
 
 ```javascript
-let model = new Model();
+let model = new Model;
 
 function changeListener(event) {
   console.log(`Changed ${event.key} to ${this[event.key]}`);
@@ -327,7 +337,7 @@ try {
 
 `List` is array-like sparse ordered collection of _non unique_ models of particular type. Sparse means that list can have `undefined` values in it.
 
-`List` mixes all methods from native `Array` including `@@iterator` so both `for of` and `for in` are available for `List` instances as well.
+`List` mixes all methods from native `Array` including `Symbol.iterator` so both `for of` and `for in` are available for `List` instances as well.
 
 If any model stored in list dispatches an event, this event is dispathed by list too. Same model can be contained by multiple lists and all those lists would be notified on model events.
 
@@ -417,13 +427,13 @@ console.log(list[9]); // → undefined
 
 Returns this list as sparse array of models. Modifications of this array do not affect list.
 
-### <a name="attribute-descriptor"></a><code>class AttributeDescriptor implements <a href="#descriptor">Descriptor</a></code>
+### <a name="chainable-descriptor"></a><code>class ChainableDescriptor implements <a href="#descriptor">Descriptor</a></code>
 
-#### <a name="attribute-descriptor.then"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> then (<i>Descriptor</i> descriptor)</code>
+#### <a name="then"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> then (<i>Descriptor</i> descriptor)</code>
 
 Adds another descriptor to chain.
 
-#### <a name="attribute-descriptor.assert"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> assert (<i>function</i> predicate, [<i>string</i> message])</code>
+#### <a name="assert"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> assert (<i>function</i> predicate, [<i>string</i> message])</code>
 
 Adds set value assertion to the queue of descriptors. If value being assigned to attribute is does not match `predicate` then `Error` is thrown.
 
@@ -439,14 +449,14 @@ foo.baz = 2;
 foo.baz = 1.5; // → Error: Integer expected
 ```
 
-#### <a name="attribute-descriptor.process"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> process (<i>function</i> processor)</code>
+#### <a name="process"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> process (<i>function</i> processor)</code>
 
 Adds set value processing to the queue of descriptors. Value being set is served to `processor` and returned value is passed through the queue.
 
 ```javascript
 class FooModel extends Model {
   static attributes = {
-    baz: process(value => value * 2);
+    baz: process(value => value * 2)
   };
 }
 
@@ -455,7 +465,7 @@ foo.baz = 2;
 console.log(foo.baz); // → 4
 ```
 
-#### <a name="attribute-descriptor.construct"></a><code><i><a href="attribute-descriptor">AttributeDescriptor</a></i> construct (<i>function</i> constructor)</code>
+#### <a name="construct"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> construct (<i>function</i> constructor)</code>
 
 Adds class construction and `instanceof` check to the queue of descriptors. If instance of `constructor` is assigned to attribute it is passed through the queue, otherwise `new constructor(value)` is invoked.
 
@@ -468,11 +478,109 @@ class Baz {
 
 class FooModel extends Model {
   static attributes = {
-    baz: construct(Baz);
+    baz: construct(Baz)
   };
 }
 
 let foo = new FooModel;
 foo.baz = 'abc';
 console.log(foo.baz.input); // → abc
+
+foo.baz = new Baz('Another input');
+console.log(foo.baz.input); // → Another input
+```
+
+#### <a name="is-required"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> isRequired ()</code>
+
+Sets [`required`](#required) flag to `true`.
+
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    baz: isRequired()
+  };
+}
+
+new FooModel; // → Error: Required attribute FooModel[baz] cannot be undefined
+```
+
+#### <a name="default-value"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> defaultValue (<i>\*</i> value)</code>
+
+Sets [`default`](#default) value. This is actually useful only in conjuction with other chainable methods because otherwise you can use shorthand syntax for defaults.
+
+```javascript
+class FooModel extends Model {
+  static attributes = {
+    baz: assert(value => typeof value == 'string').defaultValue('Hello!')
+  };
+}
+
+let foo = new FooModel({baz: 'Hello Peter!'});
+console.log(foo.baz); // → Hello Peter!
+
+foo.baz = undefined;
+console.log(foo.baz); // → Hello!
+```
+
+#### <a name="not-serializable"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> notSerializable ()</code>
+
+Sets [`serializable`](#serializable) flag to `false`.
+
+```javascript
+class CarModel extends Model {
+  static attributes = {
+    brand: 'Porshe',
+    owner: notSerializable()
+  };
+}
+
+let car = new CarModel({owner: 'Johnny'});
+
+console.log(car.owner);  // → Johnny
+console.log(JSON.stringify(car));  // → {"brand":"Porshe"}
+```
+
+#### <a name="propagate"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> propagate ()</code>
+
+Add listener to set value that redispatches events occurd on value to owning model. This is done only in case assigned value is `EventDispatcher`, otherwise nothing happens. If attribute already stores another `EventDispatcher` then propagation listener is removed from it, so it won't notify parent anymore.
+
+```javascript
+class GroupModel extends Model {
+  static attributes = {
+    manager: propagate()
+  };
+}
+class UserModel extends Model {}
+
+let group = new GroupModel,
+    user = new UserModel;
+    
+group.manager = user;
+group.addEventListener(ChangeEvent, event => console.log('Changed', event.target, 'nested in', this));
+
+user.update({name: 'Peter'}); // → Changed UserModel {name: "Peter"} nested in GroupModel {manager: UserModel}
+```
+
+#### <a name="nested"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> nested (class.<EventDispatcher> nestedClass)</code>
+
+Shorthand method for `construct(nestedClass).propagate()`.
+
+```javascript
+class UserModel extends Model {
+  sayMyName() {
+    console.log(this.name);
+  }
+}
+
+class GroupModel extends Model {
+  static attributes = {
+    manager: nested(UserModel)
+  };
+}
+
+let group = new GroupModel({manager: {name: 'Peter'}}); // Nested object would be converted to UserModel
+group.manager.sayMyName();  // → Peter
+
+group.addEventListener(ChangeEvent, event => console.log(`Changed ${event.key}`));
+group.manager.update({name: 'Peter'}); // → Changed name
 ```
