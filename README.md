@@ -1,4 +1,4 @@
-# LeDomain
+# LeDomain [![Build Status](https://travis-ci.org/smikhalevski/le-domain.svg)](https://travis-ci.org/smikhalevski/le-domain)
 
 An accessor-based approach to defining domain models.
 
