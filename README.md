@@ -1,4 +1,4 @@
-# Better Backbone
+# LeDomain
 
 An accessor-based approach to defining domain models.
 
