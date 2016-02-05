@@ -33,8 +33,22 @@ app.users = [{username: 'peter'}, {username: 'meg', online: true}];
 
 console.log(app.name); // → Domain App
 
-app.users.getOnlineUsers()[0].sayUsername(); // → meg
+let user = app.users.getOnlineUsers()[0];
+user.sayUsername(); // → meg
+
+// Add event listener to root model.
+app.addEventListener(ChaneEvent, event => console.log(`Changed ${event.key} in`, event.target));
+
+user.online = false; // → Changed online in UserModel {username: "meg", online: false}
 ```
+
+Cool features:
+- Work with models as with plain objects! No more attribute string names and things like `set('myAttr', 'foo')`.
+- Nested models and lists of models.
+- Attribute definition inheritance and overriding.
+- Runtime assertions of model attributes.
+- No more names of events! Events are attached and listend to by their constructor.
+- Event propagation through nested models.
 
 ## Contents
 1. [API](#api)
@@ -43,6 +57,12 @@ app.users.getOnlineUsers()[0].sayUsername(); // → meg
     2. [`removeEventListener`](#remove-event-listener)
     3. [`dispatchEvent`](#dispatch-event)
     4. [`transaction`](#transaction)
+    5. [Built-in events](#built-in-events)
+      1. [`Event`](#event)
+      2. [`ChangeEvent`](#change-event)
+      3. [`AddEvent`](#add-event)
+      4. [`RemoveEvent`](#remove-event)
+      5. [`SortEvent`](#remove-event)
   2. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
     1. [`Model.attributesKey`](#model.attributes-key)
     2. [`new Model`](#model.constructor)
@@ -140,6 +160,14 @@ dispatcher.transaction(() => {
 // → Transactions
 // → are cool!
 ```
+
+#### Built-in events
+
+##### `Event`
+##### `ChangeEvent`
+##### `AddEvent`
+##### `RemoveEvent`
+##### `SortEvent`
 
 ### <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
@@ -549,7 +577,7 @@ new FooModel; // → Error: Required attribute FooModel[baz] cannot be undefined
 
 #### <a name="default-value"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> defaultValue (<i>\*</i> value)</code>
 
-Sets [`default`](#default) value. This is actually useful only in conjuction with other chainable methods because otherwise you can use shorthand syntax for defaults.
+Sets [`default`](#default) value. This is actually useful only in conjunction with other chainable methods because otherwise you can use shorthand syntax for defaults.
 
 ```javascript
 class FooModel extends Model {
@@ -585,7 +613,7 @@ console.log(JSON.stringify(car));  // → {"brand":"Porshe"}
 
 #### <a name="propagate"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> propagate ()</code>
 
-Add listener to set value that redispatches events occurd on value to owning model. This is done only in case assigned value is `EventDispatcher`, otherwise nothing happens. If attribute already stores another `EventDispatcher` then propagation listener is removed from it, so it won't notify parent anymore.
+Add listener to set value that re-dispatches events occurred on value to owning model. This is done only in case assigned value is `EventDispatcher`, otherwise nothing happens. If attribute already stores another `EventDispatcher` then propagation listener is removed from it, so it won't notify parent anymore.
 
 ```javascript
 class GroupModel extends Model {
