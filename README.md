@@ -1,5 +1,42 @@
-## Contents
+# Better Backbone
 
+An accessor-based approach to defining domain models.
+
+```javascript
+class User extends Model {
+  static attributes = {
+    username: isRequired(),
+    online: notSerializable().defaultValue(false)
+  };
+  
+  sayUsername() {
+    console.log(this.username);
+  }
+}
+
+class UserList extends List.of(User) {
+  getOnlineUsers() {
+    return this.find(user => user.online);
+  }
+}
+
+class Application extends Model {
+  static attributes = {
+    name: 'Domain App'
+    users: nested(UserList)
+  };
+}
+
+let app = new Application;
+
+app.users = [{username: 'peter'}, {username: 'meg', online: true}];
+
+console.log(app.name); // → Domain App
+
+app.users.getOnlineUsers()[0].sayUsername(); // → meg
+```
+
+## Contents
 1. [API](#api)
   1. <a href="#event-dispatcher"><code>class <b>EventDispatcher</b></code></a>
     1. [`addEventListener`](#add-event-listener)
@@ -8,8 +45,8 @@
     4. [`transaction`](#transaction)
   2. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
     1. [`Model.attributesKey`](#model.attributes-key)
-    2. [`attributes`](#attributes)
-    3. [`new Model`](#model.constructor)
+    2. [`new Model`](#model.constructor)
+    3. [`attributes`](#attributes)
     4. [`getUniqueId`](#model_get-unique-id)
     4. [`getId`](#get-id)
     5. [`update`](#model_update)
@@ -26,16 +63,18 @@
     3. [`[]`](#list_brackets)
     4. [`length`](#length)
     5. [`valueOf`](#list_value-of)
-  5. <a href="#chained-dispatcher"><code>class <b>ChainedDispatcher</b> implements Dispatcher</code></a>
-    1. [`then`](#then)
-    2. [`assert`](#assert)
-    3. [`process`](#process)
-    4. [`construct`](#construct)
-    5. [`isRequired`](#is-required)
-    6. [`defaultValue`](#default-value)
-    7. [`notSerializable`](#not-serializable)
-    8. [`propagate`](#propagate)
-    9. [`nested`](#nested)
+  5. <a href="#chainable-dispatcher"><code>class <b>ChainableDispatcher</b> implements Dispatcher</code></a>
+    1. [`new ChainableDescriptor`](#chainable-descriptor.constructor)
+    2. [`then`](#then)
+    3. [`assert`](#assert)
+    4. [`process`](#process)
+    5. [`construct`](#construct)
+    6. [`isRequired`](#is-required)
+    7. [`defaultValue`](#default-value)
+    8. [`notSerializable`](#not-serializable)
+    9. [`propagate`](#propagate)
+    10. [`nested`](#nested)
+2. [Creating custom `ChainableDescriptor`](#creating-custom-chainable-descriptor)
 
 ## API
 
@@ -121,6 +160,15 @@ let sandwich = new SandwichModel;
 console.log(sandwich.needsBread) // → true
 ```
 
+#### <a name="model.constructor"></a><code>new Model ([<i>object</i> initilas])</code>
+
+Creates new `Model` instance updating it with values provided by optional `initials` object.
+
+```javascript
+let model = new Model({foo: 123});
+console.log(model.foo) // → 123
+```
+
 #### <a name="attributes"></a><code><i>object.&lt;string, <a href="#descriptor">Descriptor</a>&gt;</i> [<a href="model.attributeskey">Model.attributesKey</a>]</code>
 
 Optional definition of descriptors for a particular model. Read more [about attribute descriptors below](#descriptor).
@@ -162,15 +210,6 @@ console.log(sportsCar.topSpeed); // → 200
 
 sportsCar.brand = 'Porshe'; // → Changed brand to Porshe
 sportsCar.topSpeed = 320; // → Changed topSpeed to 320
-```
-
-#### <a name="model.constructor"></a><code>new Model ([<i>object</i> initilas])</code>
-
-Creates new `Model` instance updating it with values provided by optional `initials` object.
-
-```javascript
-let model = new Model({foo: 123});
-console.log(model.foo) // → 123
 ```
 
 #### <a name="model_get-unique-id"></a><code><i>String</i> getUniqueId ()</code>
@@ -429,6 +468,10 @@ Returns this list as sparse array of models. Modifications of this array do not 
 
 ### <a name="chainable-descriptor"></a><code>class ChainableDescriptor implements <a href="#descriptor">Descriptor</a></code>
 
+#### <a name="chainable-descriptor.constructor"></a><code>new ChainableDescriptor (<i>ChainableDescriptor</i> preceeder, <i>Descriptor</i> descriptor)</code>
+
+Creates descriptor chain.
+
 #### <a name="then"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> then (<i>Descriptor</i> descriptor)</code>
 
 Adds another descriptor to chain.
@@ -561,7 +604,7 @@ group.addEventListener(ChangeEvent, event => console.log('Changed', event.target
 user.update({name: 'Peter'}); // → Changed UserModel {name: "Peter"} nested in GroupModel {manager: UserModel}
 ```
 
-#### <a name="nested"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> nested (class.<EventDispatcher> nestedClass)</code>
+#### <a name="nested"></a><code><i><a href="chainable-descriptor">ChainableDescriptor</a></i> nested (class.&lt;EventDispatcher&gt; nestedClass)</code>
 
 Shorthand method for `construct(nestedClass).propagate()`.
 
@@ -583,4 +626,36 @@ group.manager.sayMyName();  // → Peter
 
 group.addEventListener(ChangeEvent, event => console.log(`Changed ${event.key}`));
 group.manager.update({name: 'Peter'}); // → Changed name
+```
+
+## <a name="creating-custom-chainable-descriptor"></a>Creating custom `ChainableDescriptor`
+
+```javascript
+function isInteger() {
+  return then.call(this, {
+    set (value) {
+      if (Number.isInteger(value)) {
+        return value;
+      }
+      throw new Error('Expected integer value');
+    }
+  });
+}
+
+ChainableDescriptor.prototype.isInteger = isInteger; // Make method chainable.
+```
+
+Example of usage of `isInteger` in descriptor chain:
+
+```javascript
+class PixelModel extends Model {
+  static attributes = {
+    x: isInteger().isRequired(),
+    y: assert(y => y > 0).isInetger()
+  };
+}
+
+let pixel = new Pixel({x: 10, y: 20});
+
+pixel.x = 12.5; // → Error: Expected integer value
 ```
