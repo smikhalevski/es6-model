@@ -95,7 +95,7 @@ Main features:
   3. [`[]`](#list_brackets)
   4. [`length`](#length)
   5. [`valueOf`](#list_value-of)
-6. <a href="#chainable-dispatcher"><code>class <b>ChainableDispatcher</b> implements Dispatcher</code></a>
+6. <a href="#chainable-descriptor"><code>class <b>ChainableDescriptor</b> implements Descriptor</code></a>
   1. [`new ChainableDescriptor`](#chainable-descriptor.constructor)
   2. [`then`](#then)
   3. [`assert`](#assert)
@@ -685,7 +685,7 @@ group.addEventListener(ChangeEvent, event => console.log(`Changed ${event.key}`)
 group.manager.update({name: 'Peter'}); // → Changed name
 ```
 
-## <a name="creating-custom-chainable-descriptor"></a>Creating custom `ChainableDescriptor`
+### <a name="creating-custom-chainable-descriptor"></a>Creating custom `ChainableDescriptor`
 
 ```javascript
 function isInteger() {
