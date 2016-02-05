@@ -42,7 +42,8 @@ app.addEventListener(ChaneEvent, event => console.log(`Changed ${event.key} in`,
 user.online = false; // → Changed online in UserModel {username: "meg", online: false}
 ```
 
-Cool features:
+Main features:
+
 - Work with models as with plain objects! No more attribute string names and things like `set('myAttr', 'foo')`.
 - Nested models and lists of models.
 - Attribute definition inheritance and overriding.
@@ -51,54 +52,52 @@ Cool features:
 - Event propagation through nested models.
 
 ## Contents
-1. [API](#api)
-  1. <a href="#event-dispatcher"><code>class <b>EventDispatcher</b></code></a>
-    1. [`addEventListener`](#add-event-listener)
-    2. [`removeEventListener`](#remove-event-listener)
-    3. [`dispatchEvent`](#dispatch-event)
-    4. [`transaction`](#transaction)
-    5. [Built-in events](#built-in-events)
-      1. [`Event`](#event)
-      2. [`ChangeEvent`](#change-event)
-      3. [`AddEvent`](#add-event)
-      4. [`RemoveEvent`](#remove-event)
-      5. [`SortEvent`](#remove-event)
-  2. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
-    1. [`Model.attributesKey`](#model.attributes-key)
-    2. [`new Model`](#model.constructor)
-    3. [`attributes`](#attributes)
-    4. [`getUniqueId`](#model_get-unique-id)
-    4. [`getId`](#get-id)
-    5. [`update`](#model_update)
-  3. <a href="#descriptor"><code>interface <b>Descriptor</b></code></a>
-    1. [`get`](#descriptor_get)
-    2. [`set`](#descriptor_set)
-    3. [`default`](#default)
-    4. [`serializable`](#serializable)
-    5. [`constant`](#constant)
-    6. [`required`](#required)
-  4. <a href="#list"><code>class <b>List</b></code></a>
-    1. [`List.of`](#list.of)
-    2. [`new List`](#list.constructor)
-    3. [`[]`](#list_brackets)
-    4. [`length`](#length)
-    5. [`valueOf`](#list_value-of)
-  5. <a href="#chainable-dispatcher"><code>class <b>ChainableDispatcher</b> implements Dispatcher</code></a>
-    1. [`new ChainableDescriptor`](#chainable-descriptor.constructor)
-    2. [`then`](#then)
-    3. [`assert`](#assert)
-    4. [`process`](#process)
-    5. [`construct`](#construct)
-    6. [`isRequired`](#is-required)
-    7. [`defaultValue`](#default-value)
-    8. [`notSerializable`](#not-serializable)
-    9. [`propagate`](#propagate)
-    10. [`nested`](#nested)
-2. [Creating custom `ChainableDescriptor`](#creating-custom-chainable-descriptor)
 
-## API
+1. <a href="#event-dispatcher"><code>class <b>EventDispatcher</b></code></a>
+  1. [`addEventListener`](#add-event-listener)
+  2. [`removeEventListener`](#remove-event-listener)
+  3. [`dispatchEvent`](#dispatch-event)
+  4. [`transaction`](#transaction)
+2. [Built-in events](#built-in-events)
+  1. [`Event`](#event)
+  2. [`ChangeEvent`](#change-event)
+  3. [`AddEvent`](#add-event)
+  4. [`RemoveEvent`](#remove-event)
+  5. [`SortEvent`](#remove-event)
+3. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
+  1. [`Model.attributesKey`](#model.attributes-key)
+  2. [`new Model`](#model.constructor)
+  3. [`attributes`](#attributes)
+  4. [`getUniqueId`](#model_get-unique-id)
+  4. [`getId`](#get-id)
+  5. [`update`](#model_update)
+4. <a href="#descriptor"><code>interface <b>Descriptor</b></code></a>
+  1. [`get`](#descriptor_get)
+  2. [`set`](#descriptor_set)
+  3. [`default`](#default)
+  4. [`serializable`](#serializable)
+  5. [`constant`](#constant)
+  6. [`required`](#required)
+5. <a href="#list"><code>class <b>List</b></code></a>
+  1. [`List.of`](#list.of)
+  2. [`new List`](#list.constructor)
+  3. [`[]`](#list_brackets)
+  4. [`length`](#length)
+  5. [`valueOf`](#list_value-of)
+6. <a href="#chainable-dispatcher"><code>class <b>ChainableDispatcher</b> implements Dispatcher</code></a>
+  1. [`new ChainableDescriptor`](#chainable-descriptor.constructor)
+  2. [`then`](#then)
+  3. [`assert`](#assert)
+  4. [`process`](#process)
+  5. [`construct`](#construct)
+  6. [`isRequired`](#is-required)
+  7. [`defaultValue`](#default-value)
+  8. [`notSerializable`](#not-serializable)
+  9. [`propagate`](#propagate)
+  10. [`nested`](#nested)
+  11. [Creating custom `ChainableDescriptor`](#creating-custom-chainable-descriptor)
 
-### <a name="event-dispatcher"></a>`class EventDispatcher`
+## <a name="event-dispatcher"></a>`class EventDispatcher`
 
 #### <a name="add-event-listener"></a><code><i>void</i> addEventListener (<i>class</i> eventClass ..., <i>function</i> listener)</code>
 
@@ -161,15 +160,15 @@ dispatcher.transaction(() => {
 // → are cool!
 ```
 
-#### Built-in events
+### Built-in events
 
-##### `Event`
-##### `ChangeEvent`
-##### `AddEvent`
-##### `RemoveEvent`
-##### `SortEvent`
+#### `Event`
+#### `ChangeEvent`
+#### `AddEvent`
+#### `RemoveEvent`
+#### `SortEvent`
 
-### <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
+## <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
 #### <a name="model.attributes-key"></a><code><i>string</i> Model.attributesKey</code>
 
@@ -274,7 +273,7 @@ model.addEventListener(ChangeEvent, changeListener);
 model.update({foo: 'bar'}); // → Changed foo to bar
 ```
 
-### <a name="descriptor"></a>`interface Descriptor`
+## <a name="descriptor"></a>`interface Descriptor`
 
 #### <a name="descriptor_get"></a><code><i>\*</i> get (<i>\*</i> storedValue)</code>
 
@@ -494,7 +493,7 @@ console.log(list[9]); // → undefined
 
 Returns this list as sparse array of models. Modifications of this array do not affect list.
 
-### <a name="chainable-descriptor"></a><code>class ChainableDescriptor implements <a href="#descriptor">Descriptor</a></code>
+## <a name="chainable-descriptor"></a><code>class ChainableDescriptor implements <a href="#descriptor">Descriptor</a></code>
 
 #### <a name="chainable-descriptor.constructor"></a><code>new ChainableDescriptor (<i>ChainableDescriptor</i> preceeder, <i>Descriptor</i> descriptor)</code>
 
