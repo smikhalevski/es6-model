@@ -2,6 +2,16 @@
 
 An accessor-based approach to defining domain models.
 
+- Work with models as plain objects. No more string names for attributes and calls like `set('key', 'foo')`.
+- Attribute definition inheritance and overriding.
+- Make model attributes read only, required, non enumerable.
+- Supprot of nested models and lists of models handling.
+- Model can be contained in multiple lists.
+- Runtime assertions of model attributes.
+- No more names of events! Events are attached and listend to by their constructor.
+- Event propagation through nested models.
+- Event-driven transactions. Don't let your listeners see partially updated models.
+
 ```javascript
 class User extends Model {
   static attributes = {
@@ -41,16 +51,6 @@ app.addEventListener(ChaneEvent, event => console.log(`Changed ${event.key} in`,
 
 user.online = false; // → Changed online in UserModel {username: "meg", online: false}
 ```
-
-Main features:
-
-- Work with models as plain objects. No more string names for attributes and setter/getter calls like `set('myAttr', 'foo')`.
-- Nested models and lists of models.
-- Attribute definition inheritance and overriding.
-- Runtime assertions of model attributes.
-- No more names of events! Events are attached and listend to by their constructor.
-- Event propagation through nested models.
-- Event-driven transactions.
 
 ## Contents
 
