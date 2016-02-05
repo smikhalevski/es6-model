@@ -2,11 +2,11 @@ import 'babel-polyfill';
 import assert, {equal, deepEqual} from 'assert';
 import MutationEvent from '../../main/js/MutationEvent';
 import EventDispatcher from '../../main/js/EventDispatcher';
-import AttributeDescriptor, * as STATICS from '../../main/js/AttributeDescriptor';
+import ChainableDescriptor, * as STATICS from '../../main/js/ChainableDescriptor';
 
 describe('then', () => {
 
-  it('creates new `AttributeDescriptor`', () => {
+  it('creates new `ChainableDescriptor`', () => {
     let get = val => val * 2,
         set = val => val / 2,
         serializable = false,
@@ -16,7 +16,7 @@ describe('then', () => {
 
     let ad = STATICS.then({get, set, serializable, required, constant, default: _default});
 
-    assert(ad instanceof AttributeDescriptor);
+    assert(ad instanceof ChainableDescriptor);
     equal(ad.get(111), 222);
     equal(ad.set(222), 111);
     equal(ad.serializable, serializable);
@@ -34,7 +34,7 @@ describe('propagate', () => {
     parent.addEventListener(MutationEvent, () => done());
 
     let ad = STATICS.propagate();
-    assert(ad instanceof AttributeDescriptor);
+    assert(ad instanceof ChainableDescriptor);
     equal(ad.set.call(parent, child, undefined), child);
 
     child.dispatchEvent(new MutationEvent);
@@ -47,7 +47,7 @@ describe('propagate', () => {
     parent.addEventListener(MutationEvent, () => done());
 
     let ad = STATICS.propagate();
-    assert(ad instanceof AttributeDescriptor);
+    assert(ad instanceof ChainableDescriptor);
     equal(ad.set.call(parent, child1, undefined), child1);
     equal(ad.set.call(parent, child2, child1), child2);
 
@@ -68,19 +68,19 @@ describe('construct', () => {
       }
     }
     let ad = STATICS.construct(ClassA);
-    assert(ad instanceof AttributeDescriptor);
+    assert(ad instanceof ChainableDescriptor);
     assert(ad.set(myInput) instanceof ClassA);
   });
 });
 
-describe('AttributeDescriptor', () => {
+describe('ChainableDescriptor', () => {
 
   it('allows chaining', () => {
     let ad = STATICS
       .then({get: val => val * 2})
       .then({set: val => val / 2});
 
-    assert(ad instanceof AttributeDescriptor);
+    assert(ad instanceof ChainableDescriptor);
     equal(ad.get(111), 222);
     equal(ad.set(222), 111);
   });

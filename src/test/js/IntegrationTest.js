@@ -3,7 +3,7 @@ import {equal, deepEqual, throws} from 'assert';
 import Model from '../../main/js/Model';
 import List from '../../main/js/List';
 import ChangeEvent from '../../main/js/ChangeEvent';
-import {assert, nested, notSerializable} from '../../main/js/AttributeDescriptor';
+import {assert, nested, notSerializable} from '../../main/js/ChainableDescriptor';
 
 describe('Integration', () => {
 

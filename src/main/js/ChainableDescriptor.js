@@ -2,7 +2,7 @@ import isFunction from 'lodash.isfunction';
 import EventDispatcher from './EventDispatcher';
 import MutationEvent from './MutationEvent';
 
-export default class AttributeDescriptor {
+export default class ChainableDescriptor {
 
   constructor (parent, descriptor) {
     this.parent = parent;
@@ -15,7 +15,7 @@ export default class AttributeDescriptor {
     let _self = this;
 
     this.get = function (val) {
-      for (let self = _self; self instanceof AttributeDescriptor; self = self.parent) {
+      for (let self = _self; self instanceof ChainableDescriptor; self = self.parent) {
         if ('get' in self.descriptor) {
           val = self.descriptor.get.call(this, val);
         }
@@ -25,7 +25,7 @@ export default class AttributeDescriptor {
 
     this.set = function (val, previous) {
       let parents = [];
-      for (let self = _self; self instanceof AttributeDescriptor; self = self.parent) {
+      for (let self = _self; self instanceof ChainableDescriptor; self = self.parent) {
         parents.push(self);
       }
       parents.reverse();
@@ -83,7 +83,7 @@ export default class AttributeDescriptor {
   }
 }
 
-Object.assign(AttributeDescriptor.prototype, {
+Object.assign(ChainableDescriptor.prototype, {
   then,
   assert,
   process,
@@ -96,7 +96,7 @@ Object.assign(AttributeDescriptor.prototype, {
 });
 
 export function then (descriptor) {
-  return new AttributeDescriptor(this, descriptor);
+  return new ChainableDescriptor(this, descriptor);
 }
 
 export function assert (predicate, message = 'Assertion failed') {
@@ -165,7 +165,7 @@ export function isRequired () {
 }
 
 /**
- * @return {AttributeDescriptor}
+ * @return {ChainableDescriptor}
  */
 export function notSerializable () {
   return then.call(this, {serializable: false});

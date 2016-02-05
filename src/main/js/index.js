@@ -1,5 +1,5 @@
 import AddEvent from './AddEvent';
-import AttributeDescriptor from './AttributeDescriptor';
+import ChainableDescriptor from './ChainableDescriptor';
 import ChangeEvent from './ChangeEvent';
 import EventDispatcher from './EventDispatcher';
 import index from './index';
@@ -9,4 +9,4 @@ import MutationEvent from './MutationEvent';
 import RemoveEvent from './RemoveEvent';
 import SortEvent from './SortEvent';
 
-export default {AddEvent, AttributeDescriptor, ChangeEvent, EventDispatcher, List, Model, MutationEvent, RemoveEvent, SortEvent};
+export default {AddEvent, ChainableDescriptor, ChangeEvent, EventDispatcher, List, Model, MutationEvent, RemoveEvent, SortEvent};
