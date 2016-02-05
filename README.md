@@ -50,6 +50,7 @@ Main features:
 - Runtime assertions of model attributes.
 - No more names of events! Events are attached and listend to by their constructor.
 - Event propagation through nested models.
+- Event-driven transactions.
 
 ## Contents
 
@@ -58,12 +59,17 @@ Main features:
   2. [`removeEventListener`](#remove-event-listener)
   3. [`dispatchEvent`](#dispatch-event)
   4. [`transaction`](#transaction)
-2. [Built-in events](#built-in-events)
-  1. [`Event`](#event)
-  2. [`ChangeEvent`](#change-event)
-  3. [`AddEvent`](#add-event)
-  4. [`RemoveEvent`](#remove-event)
-  5. [`SortEvent`](#remove-event)
+2. <a href="#event"><code>class <b>Event</b></code></a>
+  1. [`target`](#target)
+  2. [`relatedTarget`](#related-target)
+  3. [`stopPropagation`](#stop-propagation)
+  4. [`isPropagationStopped`](#is-propagation-stopped)
+  5. [Catalog of built-in events](#catalog-of-built-in-events)
+    1. [<a href="#event"><code>class <b>MutationEvent</b> extends Event</code></a>](#mutation-event)
+    1. [<a href="#event"><code>class <b>ChangeEvent</b> extends MutationEvent</code></a>](#change-event)
+    2. [<a href="#event"><code>class <b>AddEvent</b> extends MutationEvent</code></a>](#add-event)
+    3. [<a href="#event"><code>class <b>RemoveEvent</b> extends MutationEvent</code></a>](#remove-event)
+    4. [<a href="#event"><code>class <b>SortEvent</b> extends MutationEvent</code></a>](#remove-event)
 3. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
   1. [`Model.attributesKey`](#model.attributes-key)
   2. [`new Model`](#model.constructor)
@@ -160,13 +166,18 @@ dispatcher.transaction(() => {
 // → are cool!
 ```
 
-### Built-in events
+## <a name="event"></a>`class Event`
+#### <a name="target"></a><code><i><a href="event-dispatcher">EventDispatcher</a></i> target</code>
+#### <a name="related-target"></a><code><i><a href="event-dispatcher">EventDispatcher</a></i> relatedTarget</code>
+#### <a name="stop-propagation"></a><code><i>void</i> stopPropagation ()</code>
+#### <a name="is-propagation-stopped"></a><code><i>boolean</i> isPropagationStopped ()</code>
 
-#### `Event`
-#### `ChangeEvent`
-#### `AddEvent`
-#### `RemoveEvent`
-#### `SortEvent`
+### Catalog of built-in events
+#### <a name="mutation-event"></a><code>class <b>MutationEvent</b> extends Event</code>
+#### <a name="change-event"></a><code>class <b>ChangeEvent</b> extends MutationEvent</code>
+#### <a name="add-event"></a><code>class <b>AddEvent</b> extends MutationEvent</code>
+#### <a name="remove-event"></a><code>class <b>RemoveEvent</b> extends MutationEvent</code>
+#### <a name="sort-event"></a><code>class <b>SortEvent</b> extends MutationEvent</code>
 
 ## <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
