@@ -44,7 +44,7 @@ user.online = false; // → Changed online in UserModel {username: "meg", online
 
 Main features:
 
-- Work with models as with plain objects! No more attribute string names and things like `set('myAttr', 'foo')`.
+- Work with models as plain objects. No more string names for attributes and setter/getter calls like `set('myAttr', 'foo')`.
 - Nested models and lists of models.
 - Attribute definition inheritance and overriding.
 - Runtime assertions of model attributes.
@@ -67,9 +67,14 @@ Main features:
   5. [Catalog of built-in events](#catalog-of-built-in-events)
     1. [<a href="#event"><code>class <b>MutationEvent</b> extends Event</code></a>](#mutation-event)
     1. [<a href="#event"><code>class <b>ChangeEvent</b> extends MutationEvent</code></a>](#change-event)
+      1. [`key`](#key)
     2. [<a href="#event"><code>class <b>AddEvent</b> extends MutationEvent</code></a>](#add-event)
+      1. [`model`](#add-event_model)
     3. [<a href="#event"><code>class <b>RemoveEvent</b> extends MutationEvent</code></a>](#remove-event)
+      1. [`model`](#remove-event_model)
     4. [<a href="#event"><code>class <b>SortEvent</b> extends MutationEvent</code></a>](#remove-event)
+      1. [`model`](#sort-event_model)
+      2. [`previousIndex`](#previous-index)
 3. <a href="#model"><code>class <b>Model</b> extends EventDispatcher</code></a>
   1. [`Model.attributesKey`](#model.attributes-key)
   2. [`new Model`](#model.constructor)
@@ -175,9 +180,23 @@ dispatcher.transaction(() => {
 ### Catalog of built-in events
 #### <a name="mutation-event"></a><code>class <b>MutationEvent</b> extends Event</code>
 #### <a name="change-event"></a><code>class <b>ChangeEvent</b> extends MutationEvent</code>
+##### <a name="key"></a><code><i>string|integer</i> key</code>
+Key that was changed in `target` model or list.
+
 #### <a name="add-event"></a><code>class <b>AddEvent</b> extends MutationEvent</code>
+##### <a name="add-event_model"></a><code><i><a href="#model">Model</a></i> model</code>
+Model that was added to `target` list.
+
 #### <a name="remove-event"></a><code>class <b>RemoveEvent</b> extends MutationEvent</code>
+##### <a name="remove-event_model"></a><code><i><a href="#model">Model</a></i> model</code>
+Model that was removed from `target` list.
+
 #### <a name="sort-event"></a><code>class <b>SortEvent</b> extends MutationEvent</code>
+##### <a name="sort-event_model"></a><code><i><a href="#model">Model</a></i> model</code>
+Model that changed its index in `target` list.
+
+##### <a name="previous-index"></a><code><i>integer</i> previousIndex</code>
+Index where model was stored before sorting occurred.
 
 ## <a name="model"></a><code>class Model extends <a href="#event-dispatcher">EventDispatcher</a></code>
 
