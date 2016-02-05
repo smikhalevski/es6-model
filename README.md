@@ -95,6 +95,7 @@ user.online = false; // → Changed online in UserModel {username: "meg", online
   3. [`[]`](#list_brackets)
   4. [`length`](#length)
   5. [`valueOf`](#list_value-of)
+  5. [`update`](#list_update)
 6. <a href="#chainable-descriptor"><code>class <b>ChainableDescriptor</b> implements Descriptor</code></a>
   1. [`new ChainableDescriptor`](#chainable-descriptor.constructor)
   2. [`then`](#then)
@@ -522,6 +523,12 @@ console.log(list[9]); // → undefined
 #### <a name="list_value-of"></a><code><i>array.&lt;undefined|<a href="model">Model</a>&gt;</i> valueOf ()</code>
 
 Returns this list as sparse array of models. Modifications of this array do not affect list.
+
+#### <a name="list_update"></a><code><i>void</i> update (<i>array|object</i> source)</code>
+
+Performs deep transactional update of this list. Looks up models by `getId()` and tries to update this with `source`. If no model was matched by id then new model is added.
+
+Triggers change, add, remove and sort events.
 
 ## <a name="chainable-descriptor"></a><code>class ChainableDescriptor implements <a href="#descriptor">Descriptor</a></code>
 
