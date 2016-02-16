@@ -1,6 +1,6 @@
-# LeDomain [![Build Status](https://travis-ci.org/smikhalevski/le-domain.svg)](https://travis-ci.org/smikhalevski/le-domain)
+# PubSub Domain Models [![Build Status](https://travis-ci.org/smikhalevski/pubsub-domain.svg)](https://travis-ci.org/smikhalevski/pubsub-domain)
 
-An accessor-based approach to defining domain models.
+POC of an accessor-based approach to defining domain models.
 
 - Work with models as plain objects. No more string names for attributes and calls like `set('key', 'foo')`.
 - Attribute definition inheritance and overriding.
