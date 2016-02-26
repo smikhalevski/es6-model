@@ -1,4 +1,4 @@
-# PubSub Domain Models [![Build Status](https://travis-ci.org/smikhalevski/pubsub-domain.svg)](https://travis-ci.org/smikhalevski/pubsub-domain)
+# Observable Domain Models [![Build Status](https://travis-ci.org/smikhalevski/pubsub-domain.svg)](https://travis-ci.org/smikhalevski/pubsub-domain)
 
 POC of an accessor-based approach to defining domain models.
 
