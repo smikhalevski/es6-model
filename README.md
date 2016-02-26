@@ -1,4 +1,4 @@
-# Observable Domain Models [![Build Status](https://travis-ci.org/smikhalevski/pubsub-domain.svg)](https://travis-ci.org/smikhalevski/observer-domain)
+# Observable Domain Models [![Build Status](https://travis-ci.org/smikhalevski/observer-domain.svg)](https://travis-ci.org/smikhalevski/observer-domain)
 
 POC of an accessor-based approach to defining domain models.
 
