@@ -1,5 +1,5 @@
-import uniqueId from 'lodash/utility/uniqueId';
-import isFunction from 'lodash/lang/isFunction';
+import uniqueId from 'lodash/uniqueId';
+import isFunction from 'lodash/isFunction';
 import EventDispatcher from './EventDispatcher';
 import ChangeEvent from './ChangeEvent';
 

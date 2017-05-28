@@ -1,4 +1,4 @@
-import isFunction from 'lodash.isfunction';
+import isFunction from 'lodash/isFunction';
 import EventDispatcher from './EventDispatcher';
 import MutationEvent from './MutationEvent';
 

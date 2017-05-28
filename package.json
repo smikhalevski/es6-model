@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "babel-polyfill": "",
-    "lodash": ""
+    "lodash": "4.17.4"
   },
   "description": "An accessor-based approach to defining domain models for ES6 world.",
   "author": "Savva Mikhalevski",
